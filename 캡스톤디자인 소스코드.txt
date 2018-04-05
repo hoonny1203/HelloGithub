@@ -1,0 +1,65 @@
+int count=0;
+unsigned long time1=0;
+unsigned long time2=0;
+int distance1 = 0;
+int distance2 = 0;
+
+void setup() {
+
+  Serial.begin(9600);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  int data1 = analogRead(A0);
+  int data2 = analogRead(A2);
+  
+  //측정한 volt값을 0에서 5000사이의 값으로 변환
+  int volt1 = map(data1, 0, 1023, 0, 5000);
+  int volt2 = map(data2, 0, 1023, 0, 5000);
+  //측정값을 통해 거리를 계산
+  distance1 = (21.61/(volt1-0.1696))*1000; 
+  distance2 = (21.61/(volt2-0.1696))*1000; 
+    
+  if(distance1 <= 20){
+    time1=millis();
+  }
+  if(distance2 <= 20){
+    time2=millis();
+  }
+ 
+  if(time1!=0 && time1<time2){
+    time1 = 0;
+    time2 = 0;
+    count++;
+    Serial.print("in\t\t\t");
+    Serial.println(count);
+  }
+  else if(time2!=0 && time1>time2){
+    time1=0;
+    time2=0;
+    if(count > 0)
+      count--;
+    Serial.print("out\t\t\t");
+    Serial.println(count);
+  }
+  
+  if(time1!=0 && time2!=0 && distance1 > 15 && distance2 > 15 && time1==time2) // 센서가 물체를 동시에 인식해서 time 값이 초기화 되지 않았을때
+  {
+    time1 = 0;
+    time2 = 0;
+  }
+
+  if(distance1 > 30 && distance2 > 30)
+  {
+    time1 = 0;
+    time2 = 0;
+   }
+
+  Serial.print("1: ");
+  Serial.print(distance1);
+  Serial.print("\t");
+  Serial.print("2: ");
+  Serial.println(distance2);
+  delay(50);
+}
