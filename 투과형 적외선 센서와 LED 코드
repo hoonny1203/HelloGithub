@@ -1,0 +1,51 @@
+int red_led=7;
+int green_led=8;
+unsigned long time1=0;
+unsigned long time2=0;
+
+void setup() {
+  pinMode(red_led, OUTPUT);
+  pinMode(green_led, OUTPUT); 
+  Serial.begin(9600);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  int val1 = analogRead(A0);
+  int val2 = analogRead(A1);
+  digitalWrite(red_led,HIGH);
+  digitalWrite(green_led,HIGH);
+
+  Serial.print("1: ");
+  Serial.print(val1);
+  Serial.print("\t");
+  Serial.print("2: ");
+  Serial.println(val2);
+
+  if(val1 <= 20){
+    time1=millis();
+  }
+  if(val2 <= 20){
+    time2=millis();
+  }
+ 
+  if(time1!=0 && time1<time2){//in
+    time1 = 0;
+    time2 = 0;
+    count++;
+    digitalWrite(green_led,LOW);
+    Serial.print("in\t\t\t");
+    Serial.println(count);
+  }
+  else if(time2!=0 && time1>time2){//out
+    time1=0;
+    time2=0;
+    if(count > 0)
+      count--;
+    digitalWrite(green_led,LOW);
+    Serial.print("out\t\t\t");
+    Serial.println(count);
+  }
+  
+  delay(50);
+}
